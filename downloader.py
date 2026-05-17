@@ -54,7 +54,10 @@ class Downloader:
         """停止代理服务"""
         if self.process and self.process.poll() is None:
             print("[INFO] 停止代理服务...")
-            self.process.send_signal(signal.CTRL_C_EVENT)
+            if sys.platform == "win32":
+                self.process.send_signal(signal.CTRL_C_EVENT)
+            else:
+                self.process.terminate()
             try:
                 self.process.wait(timeout=5)
             except subprocess.TimeoutExpired:

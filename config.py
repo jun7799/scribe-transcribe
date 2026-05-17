@@ -7,8 +7,9 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 BIN_DIR = os.path.join(BASE_DIR, "bin")
 DOWNLOAD_DIR = os.path.join(BASE_DIR, "downloads")
 
-# Go 下载器
-WX_DL_EXE = os.path.join(BIN_DIR, "wx-dl.exe")
+# Go 下载器（跨平台二进制名）
+_DL_BIN = "wx-dl.exe" if sys.platform == "win32" else "wx-dl"
+WX_DL_EXE = os.path.join(BIN_DIR, _DL_BIN)
 WX_DL_API = "http://127.0.0.1:2022"
 
 # Whisper 模型（复用已有的 faster-whisper-small）
