@@ -61,10 +61,33 @@ def cmd_transcribe(args):
         print(f"  已清理临时音频文件")
 
 
+def _clean_temp_files(download_dir):
+    """清理下载目录中残留的 .temp 文件（下载中断产生的半成品）"""
+    if not os.path.exists(download_dir):
+        return
+    cleaned = 0
+    for root, _, files in os.walk(download_dir):
+        for f in files:
+            if f.endswith(".temp"):
+                temp_path = os.path.join(root, f)
+                try:
+                    size_mb = os.path.getsize(temp_path) / 1024 / 1024
+                    os.remove(temp_path)
+                    cleaned += 1
+                    print(f"[INFO] 清理残留临时文件: {f} ({size_mb:.1f}MB)")
+                except OSError as e:
+                    print(f"[WARN] 无法删除 {f}: {e}")
+    if cleaned:
+        print(f"[OK] 共清理 {cleaned} 个残留临时文件\n")
+
+
 def cmd_serve(args):
     """启动代理服务，自动监控下载并转写"""
     download_dir = args.download_dir or DOWNLOAD_DIR
     ensure_dirs()
+
+    # 启动前清理上次中断残留的 .temp 文件
+    _clean_temp_files(download_dir)
 
     dl = Downloader(download_dir=download_dir)
 
